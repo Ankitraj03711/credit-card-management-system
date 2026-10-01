@@ -1,4 +1,4 @@
-package com.ccms.enums;
+package com.creditcard.management.enums;
 
 public enum CustomerStatus {
     ACTIVE,

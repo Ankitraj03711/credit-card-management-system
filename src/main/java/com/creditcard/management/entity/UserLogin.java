@@ -1,6 +1,6 @@
 package com.ccms.entity;
 
-import com.ccms.enums.UserRole;
+import com.creditcard.management.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

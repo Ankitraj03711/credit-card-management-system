@@ -3,7 +3,7 @@ package com.ccms.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.ccms.enums.TransactionType;
+import com.creditcard.management.enums.TransactionType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

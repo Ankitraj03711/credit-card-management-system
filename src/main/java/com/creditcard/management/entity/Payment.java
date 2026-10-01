@@ -2,8 +2,8 @@ package com.ccms.entity;
 
 import java.time.LocalDateTime;
 
-import com.ccms.enums.PaymentMode;
-import com.ccms.enums.PaymentStatus;
+import com.creditcard.management.enums.PaymentMode;
+import com.creditcard.management.enums.PaymentStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -2,7 +2,7 @@ package com.ccms.entity;
 
 import java.time.LocalDate;
 
-import com.ccms.enums.CardStatus;
+import com.creditcard.management.enums.CardStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
