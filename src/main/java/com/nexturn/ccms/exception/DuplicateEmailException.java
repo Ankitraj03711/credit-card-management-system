@@ -1,9 +1,9 @@
 package com.nexturn.ccms.exception;
 
-public class UserNotFoundException
+public class DuplicateEmailException
         extends RuntimeException {
 
-    public UserNotFoundException(
+    public DuplicateEmailException(
             String message) {
 
         super(message);

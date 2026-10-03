@@ -10,53 +10,54 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "userLogin")
+@Table(name = "user_login")
 public class UserLogin {
-	
-	@Id
-    @Column(length = 50)
+
+    @Id
+    @Column(name = "email", length = 100)
     private String email;
 
-    @Column(nullable = false, length = 25)
+    @Column(nullable = false, length = 255)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 30)
     private UserRole role;
-    
+
     public UserLogin() {
+    }
 
-	}
+    public UserLogin(
+            String email,
+            String password,
+            UserRole role) {
 
-	public UserLogin(String email, String password, UserRole role) {
-		this.email = email;
-		this.password = password;
-		this.role = role;
-	}
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public UserRole getRole() {
-		return role;
-	}
+    public UserRole getRole() {
+        return role;
+    }
 
-	public void setRole(UserRole role) {
-		this.role = role;
-	}
-    
-    
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
 }

@@ -1,11 +1,15 @@
 package com.nexturn.ccms.repository;
 
-import java.util.UUID;
+import com.nexturn.ccms.entity.Address;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.nexturn.ccms.entity.Address;
+import java.util.List;
+import java.util.UUID;
 
-public interface AddressRepository extends JpaRepository<Address, UUID> {
+public interface AddressRepository
+        extends JpaRepository<Address, UUID> {
 
+    List<Address> findByCustomer_CustomerId(
+            Integer customerId);
 }
