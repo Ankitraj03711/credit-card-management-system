@@ -1,11 +1,11 @@
 package com.nexturn.ccms.exception;
 
-public class UserNotFoundException extends RuntimeException{
-
+public class InvalidAmountException extends RuntimeException{
+	
 	
 	private static final long serialVersionUID = 1L;
 
-	public UserNotFoundException(String message) {
+	public InvalidAmountException(String message) {
 		super(message);
 	}
 }
