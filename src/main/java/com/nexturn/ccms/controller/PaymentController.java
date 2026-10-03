@@ -42,7 +42,7 @@ public class PaymentController {
     }
     
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<PaymentResponse>> getPaymentsByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<List<PaymentResponse>> getPaymentsByCustomerId(@PathVariable Integer customerId) {
 
         List<PaymentResponse> response = paymentService.getPaymentsByCustomerId(customerId);
         return new ResponseEntity<List<PaymentResponse>>(response, HttpStatus.OK);

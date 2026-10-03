@@ -147,7 +147,7 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public List<PaymentResponse> getPaymentsByCustomerId(Long customerId) {
+	public List<PaymentResponse> getPaymentsByCustomerId(Integer customerId) {
 
 	    // Validate customer ID
 	    if (customerId == null || customerId <= 0)

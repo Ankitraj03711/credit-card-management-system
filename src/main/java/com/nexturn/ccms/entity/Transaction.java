@@ -43,7 +43,7 @@ public class Transaction {
     @Column(length = 100, updatable = false)
     private String merchant;
 
-    protected Transaction() {
+    public Transaction() {
     	
     }
 
@@ -84,4 +84,34 @@ public class Transaction {
     public String getMerchant() {
         return merchant;
     }
+
+	public void setTransactionId(UUID transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public void setCard(CreditCardDetails card) {
+		this.card = card;
+	}
+
+	public void setTransactionType(TransactionType transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public void setTransactionDate(LocalDateTime transactionDate) {
+		this.transactionDate = transactionDate;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setMerchant(String merchant) {
+		this.merchant = merchant;
+	}
+    
+    
 }
