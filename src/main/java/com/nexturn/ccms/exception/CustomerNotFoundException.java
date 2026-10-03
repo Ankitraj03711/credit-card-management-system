@@ -1,10 +1,11 @@
 package com.nexturn.ccms.exception;
 
-public class CustomerNotFoundException extends RuntimeException {
+public class CustomerNotFoundException
+        extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+    public CustomerNotFoundException(
+            String message) {
 
-	public CustomerNotFoundException(String message) {
-		super(message);
-	}
+        super(message);
+    }
 }

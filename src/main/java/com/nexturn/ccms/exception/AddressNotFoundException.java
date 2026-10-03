@@ -1,9 +1,9 @@
 package com.nexturn.ccms.exception;
 
-public class UserNotFoundException
+public class AddressNotFoundException
         extends RuntimeException {
 
-    public UserNotFoundException(
+    public AddressNotFoundException(
             String message) {
 
         super(message);

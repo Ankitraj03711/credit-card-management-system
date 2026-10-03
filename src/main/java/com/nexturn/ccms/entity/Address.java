@@ -1,9 +1,8 @@
 package com.nexturn.ccms.entity;
 
-import java.util.UUID;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,50 +10,71 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import java.util.UUID;
+
 @Entity
-@Table
+@Table(name = "address")
 public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(
+        name = "address_id",
+        nullable = false,
+        updatable = false
+    )
     private UUID addressId;
 
-    @Column( nullable = false, length = 20)
-    private String buildingNumber;
+    @Column(
+        name = "home_number",
+        nullable = false,
+        length = 20
+    )
+    private String homeNumber;
 
-    @Column(nullable = false, length = 30)
+    @Column(
+        nullable = false,
+        length = 30
+    )
     private String town;
 
-    @Column(nullable = false, length = 10)
+    @Column(
+        name = "pin_code",
+        nullable = false,
+        length = 10
+    )
     private String pinCode;
 
-    @Column(nullable = false, length = 30)
+    @Column(
+        nullable = false,
+        length = 30
+    )
     private String district;
 
-    @Column(nullable = false, length = 30)
+    @Column(
+        nullable = false,
+        length = 30
+    )
     private String state;
 
-    @Column(nullable = false, length = 20)
+    @Column(
+        nullable = false,
+        length = 20
+    )
     private String country;
 
-    @ManyToOne
-    @JoinColumn(name = "customerId", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "customer_id",
+        nullable = false
+    )
     private Customer customer;
 
+    // Default constructor
     public Address() {
     }
 
-    public Address(String buildingNumber, String town, String pinCode,
-                   String district, String state, String country,
-                   Customer customer) {
-        this.buildingNumber = buildingNumber;
-        this.town = town;
-        this.pinCode = pinCode;
-        this.district = district;
-        this.state = state;
-        this.country = country;
-        this.customer = customer;
-    }
+    // Getters and Setters
 
     public UUID getAddressId() {
         return addressId;
@@ -64,12 +84,12 @@ public class Address {
         this.addressId = addressId;
     }
 
-    public String getBuildingNumber() {
-        return buildingNumber;
+    public String getHomeNumber() {
+        return homeNumber;
     }
 
-    public void setBuildingNumber(String buildingNumber) {
-        this.buildingNumber = buildingNumber;
+    public void setHomeNumber(String homeNumber) {
+        this.homeNumber = homeNumber;
     }
 
     public String getTown() {

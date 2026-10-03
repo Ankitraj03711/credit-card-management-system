@@ -2,72 +2,85 @@ package com.nexturn.ccms.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - Credit Card Not Found
-    @ExceptionHandler(CreditCardNotFoundException.class)
-    public ResponseEntity<String> creditCardNotFoundException(CreditCardNotFoundException ex) {
+    @ExceptionHandler({
+        CustomerNotFoundException.class,
+        UserNotFoundException.class,
+        AddressNotFoundException.class
+    })
+    public ResponseEntity<Map<String, Object>>
+    handleNotFound(RuntimeException exception) {
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return createResponse(
+            HttpStatus.NOT_FOUND,
+            exception.getMessage()
+        );
     }
 
-    // 400 - Insufficient Credit Limit
-    @ExceptionHandler(InsufficientCreditLimitException.class)
-    public ResponseEntity<String> insufficientCreditLimitException(InsufficientCreditLimitException ex) {
+    @ExceptionHandler(
+        DuplicateEmailException.class
+    )
+    public ResponseEntity<Map<String, Object>>
+    handleDuplicateEmail(
+            DuplicateEmailException exception) {
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return createResponse(
+            HttpStatus.CONFLICT,
+            exception.getMessage()
+        );
     }
 
-    // 409 - Invalid Card Status
-    @ExceptionHandler(InvalidCardStatusException.class)
-    public ResponseEntity<String> invalidCardStatusException(InvalidCardStatusException ex) {
+    @ExceptionHandler(
+        IllegalArgumentException.class
+    )
+    public ResponseEntity<Map<String, Object>>
+    handleBadRequest(
+            IllegalArgumentException exception) {
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.CONFLICT);
+        return createResponse(
+            HttpStatus.BAD_REQUEST,
+            exception.getMessage()
+        );
     }
 
-    // 400 - Invalid Amount
-    @ExceptionHandler(InvalidAmountException.class)
-    public ResponseEntity<String> invalidAmountException( InvalidAmountException ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>>
+    handleGeneral(Exception exception) {
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return createResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Internal server error"
+        );
     }
 
-    // 404 - Transaction Not Found
-    @ExceptionHandler(TransactionNotFoundException.class)
-    public ResponseEntity<String> transactionNotFoundException( TransactionNotFoundException ex) {
+    private ResponseEntity<Map<String, Object>>
+    createResponse(
+            HttpStatus status,
+            String message) {
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
+        Map<String, Object> response =
+                new LinkedHashMap<>();
 
-    // 404 - Customer Not Found
-    @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<String> customerNotFoundException(CustomerNotFoundException ex) {
+        response.put(
+            "status",
+            status.value()
+        );
 
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
+        response.put(
+            "message",
+            message
+        );
 
-    // 400 - Invalid Date Range
-    @ExceptionHandler(InvalidDateRangeException.class)
-    public ResponseEntity<String> invalidDateRangeException(InvalidDateRangeException ex) {
-
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    // 400 - Invalid Argument
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
-
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-    }
-
-    // 404 - Payment Not Found
-    @ExceptionHandler(PaymentNotFoundException.class)
-    public ResponseEntity<String> paymentNotFoundException(PaymentNotFoundException ex) {
-
-        return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return ResponseEntity
+                .status(status)
+                .body(response);
     }
 }
