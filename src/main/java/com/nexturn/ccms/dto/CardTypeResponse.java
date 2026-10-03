@@ -1,5 +1,11 @@
 package com.nexturn.ccms.dto;
 
-public class CardTypeResponse {
+import java.math.BigDecimal;
 
+public record CardTypeResponse(
+        Integer cardTypeId,
+        String name,
+        String description,
+        BigDecimal annualFee
+) {
 }

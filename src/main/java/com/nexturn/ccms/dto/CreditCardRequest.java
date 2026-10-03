@@ -1,5 +1,10 @@
 package com.nexturn.ccms.dto;
 
-public class CreditCardRequest {
+import java.math.BigDecimal;
 
+public record CreditCardRequest(
+        Integer customerId,
+        Integer cardTypeId,
+        BigDecimal creditLimit
+) {
 }
