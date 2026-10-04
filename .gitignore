@@ -1,21 +1,14 @@
-# Eclipse
-.classpath
-.project
-.settings/
-.factorypath
-.springBeans
-
-# Eclipse / Java generated
-bin/
-
-# Maven
+node_modules/
 target/
-
-# Logs
-*.log
-logs/
-
-# Environment / secrets
+dist/
 .env
 .env.*
 !.env.example
+backend/.env
+frontend/.env
+!backend/.env.example
+!frontend/.env.example
+.DS_Store
+.idea/
+.vscode/
+*.log
