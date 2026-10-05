@@ -3,7 +3,9 @@ package com.nexturn.ccms.exception;
 public class AddressNotFoundException
         extends RuntimeException {
 
-    public AddressNotFoundException(
+    private static final long serialVersionUID = 1L;
+
+	public AddressNotFoundException(
             String message) {
 
         super(message);

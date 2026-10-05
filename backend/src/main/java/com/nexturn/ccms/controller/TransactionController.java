@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +16,20 @@ import com.nexturn.ccms.service.TransactionService;
 import com.nexturn.ccms.service.CustomerAccessService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-	@Autowired
-	TransactionService transactionService;
-    @Autowired
-    CustomerAccessService customerAccessService;
+	private final TransactionService transactionService;
+	private final CustomerAccessService customerAccessService;
+
+	public TransactionController(
+	        TransactionService transactionService,
+	        CustomerAccessService customerAccessService) {
+
+	    this.transactionService = transactionService;
+	    this.customerAccessService = customerAccessService;
+	}
 
     @PostMapping
     public ResponseEntity<TransactionResponse> createTransaction(@RequestBody TransactionRequest request) {

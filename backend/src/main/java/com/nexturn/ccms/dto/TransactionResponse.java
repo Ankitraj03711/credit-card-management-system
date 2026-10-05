@@ -17,6 +17,7 @@ public class TransactionResponse {
     private String merchant;
 
     public TransactionResponse() {
+    	// Required for DTO construction and property-based mapping.
     }
 
     public UUID getTransactionId() {

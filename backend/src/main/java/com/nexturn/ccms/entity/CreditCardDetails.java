@@ -55,23 +55,9 @@ public class CreditCardDetails {
     private String remarks;
 
     public CreditCardDetails() {
+    	// Required by JPA/Hibernate.
     }
 
-    public CreditCardDetails(String cardNumber, Customer customer, CardType cardType, String cvv, Double creditLimit,
-                             Double availableLimit, Double outstandingBalance, LocalDate issueDate, LocalDate expiryDate,
-                             CardStatus cardStatus, String remarks) {
-        this.cardNumber = cardNumber;
-        this.customer = customer;
-        this.cardType = cardType;
-        this.cvv = cvv;
-        this.creditLimit = creditLimit;
-        this.availableLimit = availableLimit;
-        this.outstandingBalance = outstandingBalance;
-        this.issueDate = issueDate;
-        this.expiryDate = expiryDate;
-        this.cardStatus = cardStatus;
-        this.remarks = remarks;
-    }
 
     public String getCardNumber() {
         return cardNumber;

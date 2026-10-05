@@ -280,18 +280,19 @@ public class AddressServiceImpl
         }
     }
 
-    private AddressResponse convertToResponse(
-            Address address) {
+    private AddressResponse convertToResponse(Address address) {
 
-        return new AddressResponse(
-            address.getAddressId(),
-            address.getHomeNumber(),
-            address.getTown(),
-            address.getPinCode(),
-            address.getDistrict(),
-            address.getState(),
-            address.getCountry(),
-            address.getCustomer().getCustomerId()
-        );
+    	AddressResponse response = new AddressResponse();
+
+    	response.setAddressId(address.getAddressId());
+    	response.setHomeNumber(address.getHomeNumber());
+    	response.setTown(address.getTown());
+    	response.setPinCode(address.getPinCode());
+    	response.setDistrict(address.getDistrict());
+    	response.setState(address.getState());
+    	response.setCountry(address.getCountry());
+    	response.setCustomerId(address.getCustomer().getCustomerId());
+
+    	return response;
     }
 }

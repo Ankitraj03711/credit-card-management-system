@@ -52,9 +52,9 @@ public class CardTypeServiceImpl implements CardTypeService {
     public List<CardTypeResponse> getAllCardTypes() {
         return cardTypeRepository.findAll()
                 .stream()
-                .map(cardType -> toResponse(cardType))
+                .map(CardTypeServiceImpl::toResponse)
                 .toList();
-    }
+    } 
 
     @Override
     @Transactional(readOnly = true)

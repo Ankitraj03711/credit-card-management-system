@@ -3,7 +3,9 @@ package com.nexturn.ccms.exception;
 public class CreditCardApplicationNotFoundException
         extends RuntimeException {
 
-    public CreditCardApplicationNotFoundException(String message) {
+    private static final long serialVersionUID = 1L;
+
+	public CreditCardApplicationNotFoundException(String message) {
         super(message);
     }
 }

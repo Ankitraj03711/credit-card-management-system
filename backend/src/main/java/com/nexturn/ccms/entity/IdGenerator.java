@@ -16,7 +16,7 @@ public class IdGenerator {
     private Long currentValue;
 
     public IdGenerator() {
-		// TODO Auto-generated constructor stub
+    	// Required by JPA/Hibernate.
 	}
 
 	public IdGenerator(String name, Long currentValue) {

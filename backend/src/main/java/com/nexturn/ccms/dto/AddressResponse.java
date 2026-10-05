@@ -14,27 +14,10 @@ public class AddressResponse {
     private Integer customerId;
 
     public AddressResponse() {
+    	// Required for DTO construction and property-based mapping.
     }
 
-    public AddressResponse(
-            UUID addressId,
-            String homeNumber,
-            String town,
-            String pinCode,
-            String district,
-            String state,
-            String country,
-            Integer customerId) {
 
-        this.addressId = addressId;
-        this.homeNumber = homeNumber;
-        this.town = town;
-        this.pinCode = pinCode;
-        this.district = district;
-        this.state = state;
-        this.country = country;
-        this.customerId = customerId;
-    }
 
     public UUID getAddressId() {
         return addressId;

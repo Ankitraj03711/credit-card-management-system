@@ -2,7 +2,9 @@ package com.nexturn.ccms.exception;
 
 public class CardTypeNotFoundException extends RuntimeException {
 
-    public CardTypeNotFoundException(String message) {
+    private static final long serialVersionUID = 1L;
+
+	public CardTypeNotFoundException(String message) {
         super(message);
     }
 }

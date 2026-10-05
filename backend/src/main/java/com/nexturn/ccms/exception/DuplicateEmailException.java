@@ -3,7 +3,9 @@ package com.nexturn.ccms.exception;
 public class DuplicateEmailException
         extends RuntimeException {
 
-    public DuplicateEmailException(
+    private static final long serialVersionUID = 1L;
+
+	public DuplicateEmailException(
             String message) {
 
         super(message);

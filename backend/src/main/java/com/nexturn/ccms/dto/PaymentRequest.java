@@ -22,6 +22,7 @@ public class PaymentRequest {
     private String description;
 
     public PaymentRequest() {
+    	// Required by JPA/Hibernate.
     }
 
     public String getCardNumber() {

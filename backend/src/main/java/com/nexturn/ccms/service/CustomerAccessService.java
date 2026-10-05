@@ -4,6 +4,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.nexturn.ccms.entity.Customer;
 import com.nexturn.ccms.repository.CustomerRepository;
 
 @Service
@@ -22,7 +23,7 @@ public class CustomerAccessService {
             return;
         }
         Integer ownedId = customerRepository.findByEmail(authentication.getName())
-                .map(customer -> customer.getCustomerId())
+                .map(Customer::getCustomerId)
                 .orElseThrow(() -> new AccessDeniedException(
                         "A customer profile is required"));
         if (customerId.longValue() != ownedId.longValue()) {

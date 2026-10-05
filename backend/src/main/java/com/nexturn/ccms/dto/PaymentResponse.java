@@ -16,6 +16,7 @@ public class PaymentResponse {
     private PaymentStatus paymentStatus;
 
     public PaymentResponse() {
+        // Required for DTO construction and property-based mapping.
     }
 
     public String getPaymentReference() {

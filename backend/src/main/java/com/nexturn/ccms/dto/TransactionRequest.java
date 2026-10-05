@@ -27,6 +27,7 @@ public class TransactionRequest {
     private String merchant;
 
     public TransactionRequest() {
+    	// Required for DTO construction and property-based mapping.
     }
 
     public String getCardNumber() {
@@ -69,16 +70,5 @@ public class TransactionRequest {
         this.merchant = merchant;
     }
 
-//	public TransactionRequest(@NotBlank(message = "Card number is required") String cardNumber,
-//			@NotNull(message = "Transaction type is required") TransactionType transactionType,
-//			@NotNull(message = "Amount is required") @Positive(message = "Amount must be greater than zero") Double amount,
-//			@Size(max = 255) String description, @Size(max = 100) String merchant) {
-//		this.cardNumber = cardNumber;
-//		this.transactionType = transactionType;
-//		this.amount = amount;
-//		this.description = description;
-//		this.merchant = merchant;
-//	}
-    
     
 }

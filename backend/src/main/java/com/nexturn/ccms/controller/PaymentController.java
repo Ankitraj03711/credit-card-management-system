@@ -3,7 +3,6 @@ package com.nexturn.ccms.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +15,17 @@ import com.nexturn.ccms.service.PaymentService;
 import com.nexturn.ccms.service.CustomerAccessService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/payments")
 public class PaymentController {
 
-    @Autowired
-    PaymentService paymentService;
-    @Autowired
-    CustomerAccessService customerAccessService;
+	private final PaymentService paymentService;
+    private final CustomerAccessService customerAccessService;
+
+    public PaymentController(PaymentService paymentService, CustomerAccessService customerAccessService) {
+        this.paymentService = paymentService;
+        this.customerAccessService = customerAccessService;
+    }
 
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody PaymentRequest request) {

@@ -89,6 +89,7 @@ public class Customer {
     private List<Address> addresses = new ArrayList<>();
 
     public Customer() {
+    	// Required by JPA/Hibernate.
     }
 
     public Integer getCustomerId() {

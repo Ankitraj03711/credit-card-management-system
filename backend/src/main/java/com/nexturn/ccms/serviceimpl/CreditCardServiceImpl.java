@@ -2,6 +2,7 @@ package com.nexturn.ccms.serviceimpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.random.RandomGenerator;
 
@@ -83,7 +84,7 @@ public class CreditCardServiceImpl implements CreditCardService {
 
         String cvv = generateCvv();
 
-        LocalDate issueDate = LocalDate.now();
+        LocalDate issueDate = LocalDate.now(ZoneId.of("Asia/Kolkata"));
 
         LocalDate expiryDate =
                 issueDate.plusYears(EXPIRY_YEARS);
@@ -92,20 +93,18 @@ public class CreditCardServiceImpl implements CreditCardService {
         Double creditLimit =
                 request.creditLimit().doubleValue();
 
-        CreditCardDetails card = new CreditCardDetails(
-                cardNumber,
-                customer,
-                cardType,
-                cvv,
-                creditLimit,
-                creditLimit,
-                0.0,
-                issueDate,
-                expiryDate,
-                CardStatus.ACTIVE,
-                null
-        );
+        CreditCardDetails card = new CreditCardDetails();
 
+        card.setCardNumber(cardNumber);
+        card.setCustomer(customer);
+        card.setCardType(cardType);
+        card.setCvv(cvv);
+        card.setCreditLimit(creditLimit);
+        card.setAvailableLimit(creditLimit);
+        card.setOutstandingBalance(0.0);
+        card.setIssueDate(issueDate);
+        card.setExpiryDate(expiryDate);
+        card.setCardStatus(CardStatus.ACTIVE);
         return toResponse(
                 creditCardRepository.save(card));
     }

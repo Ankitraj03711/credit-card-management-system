@@ -2,6 +2,7 @@ package com.nexturn.ccms.serviceimpl;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,7 +13,6 @@ import com.nexturn.ccms.dto.CreditCardApplicationResponse;
 import com.nexturn.ccms.dto.CreditCardRequest;
 import com.nexturn.ccms.entity.CardType;
 import com.nexturn.ccms.entity.CreditCardApplication;
-import com.nexturn.ccms.entity.CreditCardDetails;
 import com.nexturn.ccms.entity.Customer;
 import com.nexturn.ccms.entity.UserLogin;
 import com.nexturn.ccms.enums.CreditCardApplicationStatus;
@@ -169,7 +169,7 @@ public class CreditCardApplicationServiceImpl
                         "Authenticated reviewer account was not found"));
 
         application.setStatus(CreditCardApplicationStatus.APPROVED);
-        application.setReviewedDate(LocalDateTime.now());
+        application.setReviewedDate(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
         application.setReviewedBy(reviewer);
         applicationRepository.saveAndFlush(application);
 
@@ -199,7 +199,7 @@ public class CreditCardApplicationServiceImpl
                 .orElseThrow(() -> new IllegalStateException(
                         "Authenticated reviewer account was not found"));
         application.setStatus(CreditCardApplicationStatus.REJECTED);
-        application.setReviewedDate(LocalDateTime.now());
+        application.setReviewedDate(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
         application.setReviewedBy(reviewer);
         application.setRejectionReason(
                 reason == null || reason.isBlank() ? null : reason.trim());

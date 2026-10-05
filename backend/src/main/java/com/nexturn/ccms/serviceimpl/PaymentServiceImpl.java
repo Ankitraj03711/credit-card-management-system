@@ -2,10 +2,10 @@ package com.nexturn.ccms.serviceimpl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nexturn.ccms.dto.PaymentRequest;
@@ -30,17 +30,23 @@ import jakarta.transaction.Transactional;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-	@Autowired
-	PaymentRepository paymentRepository;
-	
-	@Autowired
-	CreditCardDetailsRepository creditCardDetailsRepository;
-	
-	@Autowired
-	IdGeneratorService idGeneratorService;
-	
-	@Autowired
-	CustomerRepository customerRepository;
+	private static final String CARD_NOT_FOUND = "Credit card not found with card number: ";
+	private final PaymentRepository paymentRepository;
+	private final CreditCardDetailsRepository creditCardDetailsRepository;
+	private final IdGeneratorService idGeneratorService;
+	private final CustomerRepository customerRepository;
+
+	public PaymentServiceImpl(
+	        PaymentRepository paymentRepository,
+	        CreditCardDetailsRepository creditCardDetailsRepository,
+	        IdGeneratorService idGeneratorService,
+	        CustomerRepository customerRepository) {
+
+	    this.paymentRepository = paymentRepository;
+	    this.creditCardDetailsRepository = creditCardDetailsRepository;
+	    this.idGeneratorService = idGeneratorService;
+	    this.customerRepository = customerRepository;
+	}
 	
 	
 	@Override
@@ -59,14 +65,14 @@ public class PaymentServiceImpl implements PaymentService {
 	        throw new InvalidAmountException(
 	                "Payment amount cannot exceed outstanding balance");
 
-	    String paymentReference = "PAY-" + LocalDate.now() +"-"+ idGeneratorService.getNextValue("PAYMENT_REFERENCE");
+	    String paymentReference = "PAY-" + LocalDate.now(ZoneId.of("Asia/Kolkata")) +"-"+ idGeneratorService.getNextValue("PAYMENT_REFERENCE");
 
 	    Payment payment = new Payment();
 
 	    payment.setPaymentReference(paymentReference);
 	    payment.setCard(card);
 	    payment.setAmount(request.getAmount());
-	    payment.setPaymentDate(LocalDateTime.now());
+	    payment.setPaymentDate(LocalDateTime.now(ZoneId.of("Asia/Kolkata")));
 	    payment.setPaymentMode(request.getPaymentMode());
 	    payment.setPaymentStatus(PaymentStatus.SUCCESS);
 	    payment.setDescription(request.getDescription());
@@ -121,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
 	
 	    CreditCardDetails card = creditCardDetailsRepository
 	            .findById(cardNumber)
-	            .orElseThrow(() -> new CreditCardNotFoundException("Credit card not found with card number: " + cardNumber));
+	            .orElseThrow(() -> new CreditCardNotFoundException(CARD_NOT_FOUND + cardNumber));
 
 	    List<Payment> payments = paymentRepository.findByCardCardNumber(card.getCardNumber());
 
@@ -176,97 +182,89 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	@Override
-	public List<PaymentResponse> filterPayments(String cardNumber, String mode, String status, 
-			LocalDate fromDate, LocalDate toDate, Double minAmount, Double maxAmount) {
-
-	    if (cardNumber == null || cardNumber.trim().isEmpty())
+	public List<PaymentResponse> filterPayments(
+	        String cardNumber,
+	        String mode,
+	        String status,
+	        LocalDate fromDate,
+	        LocalDate toDate,
+	        Double minAmount,
+	        Double maxAmount) {
+	
+	    if (cardNumber == null || cardNumber.trim().isEmpty()) {
 	        throw new IllegalArgumentException("Card number is required");
-	    
-
+	    }
+	
 	    creditCardDetailsRepository.findById(cardNumber)
-	            .orElseThrow(() -> new CreditCardNotFoundException("Credit card not found with card number: " + cardNumber));
-
-	    if (fromDate != null && toDate != null && fromDate.isAfter(toDate))
-	        throw new InvalidDateRangeException("From date cannot be after to date");
-	    
-
-	    if (minAmount != null && minAmount < 0)
-	    	throw new IllegalArgumentException("Minimum amount cannot be negative");
-	   
-
-	    if (maxAmount != null && maxAmount < 0)
-	    	throw new IllegalArgumentException("Maximum amount cannot be negative");
-	    
-
-	    if (minAmount != null && maxAmount != null && minAmount > maxAmount) 
-	        throw new IllegalArgumentException("Minimum amount cannot be greater than maximum amount");
-	    
-
-	    List<Payment> payments = paymentRepository.findByCardCardNumber(cardNumber);
-
-	    if (payments.isEmpty()) 
-	        throw new PaymentNotFoundException("No payments found for card number: " + cardNumber);
-	    
-
+	            .orElseThrow(() -> new CreditCardNotFoundException(
+	                    CARD_NOT_FOUND + cardNumber));
+	
+	    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+	        throw new InvalidDateRangeException(
+	                "From date cannot be after to date");
+	    }
+	
+	    if (minAmount != null && minAmount < 0) {
+	        throw new IllegalArgumentException(
+	                "Minimum amount cannot be negative");
+	    }
+	
+	    if (maxAmount != null && maxAmount < 0) {
+	        throw new IllegalArgumentException(
+	                "Maximum amount cannot be negative");
+	    }
+	
+	    if (minAmount != null
+	            && maxAmount != null
+	            && minAmount > maxAmount) {
+	
+	        throw new IllegalArgumentException(
+	                "Minimum amount cannot be greater than maximum amount");
+	    }
+	
+	    List<Payment> payments =
+	            paymentRepository.findByCardCardNumber(cardNumber);
+	
+	    if (payments.isEmpty()) {
+	        throw new PaymentNotFoundException(
+	                "No payments found for card number: " + cardNumber);
+	    }
+	
 	    List<PaymentResponse> responses = new ArrayList<>();
-
+	
 	    for (Payment payment : payments) {
-
-	        boolean matches = true;
-
-	        if (mode != null && !mode.trim().isEmpty())
-	            if (payment.getPaymentMode() == null || !payment.getPaymentMode().name().equalsIgnoreCase(mode))
-	                matches = false;
-	        
-
-	        if (status != null && !status.trim().isEmpty())
-	            if (payment.getPaymentStatus() == null || !payment.getPaymentStatus().name().equalsIgnoreCase(status)) 
-	                matches = false;
-	            
-	        if (fromDate != null)
-	            if (payment.getPaymentDate() == null || payment.getPaymentDate().toLocalDate().isBefore(fromDate))
-	                matches = false;
-	        
-
-	        if (toDate != null) {
-	            if (payment.getPaymentDate() == null || payment.getPaymentDate().toLocalDate().isAfter(toDate)) {
-	                matches = false;
-	            }
-	        }
-
-	        if (minAmount != null) {
-	            if (payment.getAmount() == null || payment.getAmount() < minAmount) {
-	                matches = false;
-	            }
-	        }
-
-	        if (maxAmount != null) {
-	            if (payment.getAmount() == null|| payment.getAmount() > maxAmount) {
-	                matches = false;
-	            }
-	        }
-
-	        if (matches) {
-
+	
+	        if (matchesPayment(
+	                payment,
+	                mode,
+	                status,
+	                fromDate,
+	                toDate,
+	                minAmount,
+	                maxAmount)) {
+	
 	            PaymentResponse response = new PaymentResponse();
-
-	            response.setPaymentReference(payment.getPaymentReference());
-	            response.setCardNumber(payment.getCard().getCardNumber());
+	
+	            response.setPaymentReference(
+	                    payment.getPaymentReference());
+	            response.setCardNumber(
+	                    payment.getCard().getCardNumber());
 	            response.setAmount(payment.getAmount());
 	            response.setPaymentMode(payment.getPaymentMode());
 	            response.setPaymentDate(payment.getPaymentDate());
 	            response.setDescription(payment.getDescription());
 	            response.setPaymentStatus(payment.getPaymentStatus());
-
+	
 	            responses.add(response);
 	        }
 	    }
-
+	
 	    if (responses.isEmpty()) {
-	        throw new PaymentNotFoundException("No payments found matching the given filters "
-	                + "for card number: " + cardNumber);
+	        throw new PaymentNotFoundException(
+	                "No payments found matching the given filters "
+	                        + "for card number: " + cardNumber);
 	    }
-
+	
 	    return responses;
 	}
 
@@ -279,7 +277,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 	    
 	    creditCardDetailsRepository.findById(cardNumber)
-	            .orElseThrow(() -> new CreditCardNotFoundException("Credit card not found with card number: " + cardNumber));
+	            .orElseThrow(() -> new CreditCardNotFoundException(CARD_NOT_FOUND + cardNumber));
 
 	    List<Payment> payments = paymentRepository.findByCardCardNumber(cardNumber);
 
@@ -289,14 +287,17 @@ public class PaymentServiceImpl implements PaymentService {
 	    LocalDateTime lastPaymentDate = null;
 
 	    for (Payment payment : payments) {
+
 	        if (payment.getAmount() != null) {
-	            totalPaidAmount = totalPaidAmount + payment.getAmount();
+	            totalPaidAmount += payment.getAmount();
 	        }
-	        if (payment.getPaymentDate() != null) {
-	            if (lastPaymentDate == null || payment.getPaymentDate().isAfter(lastPaymentDate)) {
-	                lastPaymentDate = payment.getPaymentDate();
-	                lastPaymentAmount = payment.getAmount();
-	            }
+
+	        if (payment.getPaymentDate() != null
+	                && (lastPaymentDate == null
+	                        || payment.getPaymentDate().isAfter(lastPaymentDate))) {
+
+	            lastPaymentDate = payment.getPaymentDate();
+	            lastPaymentAmount = payment.getAmount();
 	        }
 	    }
 
@@ -308,6 +309,63 @@ public class PaymentServiceImpl implements PaymentService {
 	    response.setLastPaymentDate(lastPaymentDate);
 
 	    return response;
+	}
+	
+	private boolean matchesPayment(
+	        Payment payment,
+	        String mode,
+	        String status,
+	        LocalDate fromDate,
+	        LocalDate toDate,
+	        Double minAmount,
+	        Double maxAmount) {
+
+	    boolean matchesMode =
+	            mode == null
+	            || mode.trim().isEmpty()
+	            || (payment.getPaymentMode() != null
+	                    && payment.getPaymentMode()
+	                            .name()
+	                            .equalsIgnoreCase(mode));
+
+	    boolean matchesStatus =
+	            status == null
+	            || status.trim().isEmpty()
+	            || (payment.getPaymentStatus() != null
+	                    && payment.getPaymentStatus()
+	                            .name()
+	                            .equalsIgnoreCase(status));
+
+	    boolean matchesFromDate =
+	            fromDate == null
+	            || (payment.getPaymentDate() != null
+	                    && !payment.getPaymentDate()
+	                            .toLocalDate()
+	                            .isBefore(fromDate));
+
+	    boolean matchesToDate =
+	            toDate == null
+	            || (payment.getPaymentDate() != null
+	                    && !payment.getPaymentDate()
+	                            .toLocalDate()
+	                            .isAfter(toDate));
+
+	    boolean matchesMinAmount =
+	            minAmount == null
+	            || (payment.getAmount() != null
+	                    && payment.getAmount() >= minAmount);
+
+	    boolean matchesMaxAmount =
+	            maxAmount == null
+	            || (payment.getAmount() != null
+	                    && payment.getAmount() <= maxAmount);
+
+	    return matchesMode
+	            && matchesStatus
+	            && matchesFromDate
+	            && matchesToDate
+	            && matchesMinAmount
+	            && matchesMaxAmount;
 	}
 	
 }

@@ -16,24 +16,9 @@ public class TransactionSummaryResponse {
     private Double refundAmount;
     
     public TransactionSummaryResponse() {
-		// TODO Auto-generated constructor stub
+    	// Required for DTO construction and property-based mapping.
 	}
 
-	public TransactionSummaryResponse(String cardNumber, Long totalTransactions, Double totalTransactionAmount,
-			Long purchaseCount, Double purchaseAmount, Long cashWithdrawalCount, Double cashWithdrawalAmount,
-			Long feeCount, Double feeAmount, Long refundCount, Double refundAmount) {
-		this.cardNumber = cardNumber;
-		this.totalTransactions = totalTransactions;
-		this.totalTransactionAmount = totalTransactionAmount;
-		this.purchaseCount = purchaseCount;
-		this.purchaseAmount = purchaseAmount;
-		this.cashWithdrawalCount = cashWithdrawalCount;
-		this.cashWithdrawalAmount = cashWithdrawalAmount;
-		this.feeCount = feeCount;
-		this.feeAmount = feeAmount;
-		this.refundCount = refundCount;
-		this.refundAmount = refundAmount;
-	}
 
 	public String getCardNumber() {
 		return cardNumber;

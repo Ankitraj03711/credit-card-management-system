@@ -70,11 +70,12 @@ public class Address {
     )
     private Customer customer;
 
-    // Default constructor
+
+    
     public Address() {
+        // Required by JPA/Hibernate.
     }
 
-    // Getters and Setters
 
     public UUID getAddressId() {
         return addressId;

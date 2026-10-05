@@ -16,6 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/customers")
 public class CustomerController {
 

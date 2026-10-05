@@ -2,6 +2,7 @@ package com.nexturn.ccms.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.UUID;
 
 import com.nexturn.ccms.enums.CreditCardApplicationStatus;
@@ -63,7 +64,7 @@ public class CreditCardApplication {
             applicationId = UUID.randomUUID().toString();
         }
         if (applicationDate == null) {
-            applicationDate = LocalDateTime.now();
+            applicationDate = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
         }
         if (status == null) {
             status = CreditCardApplicationStatus.PENDING;

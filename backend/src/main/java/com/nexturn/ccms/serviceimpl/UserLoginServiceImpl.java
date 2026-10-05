@@ -122,14 +122,21 @@ public class UserLoginServiceImpl
         boolean passwordMatches;
 
         if (isBcryptHash(storedPassword)) {
+
             passwordMatches = passwordEncoder.matches(
                     request.getPassword(),
                     storedPassword
             );
+
         } else {
-            passwordMatches = storedPassword.equals(
-                    request.getPassword()
-            );
+        	// OLD CODE - SonarLint issue: storedPassword may be null
+        	// passwordMatches = storedPassword.equals(
+        	//        	         request.getPassword()
+        	// );
+
+            passwordMatches = storedPassword != null
+                    && storedPassword.equals(request.getPassword());
+
             if (passwordMatches) {
                 user.setPassword(
                         passwordEncoder.encode(request.getPassword())
@@ -143,6 +150,8 @@ public class UserLoginServiceImpl
                     "Invalid email or password"
             );
         }
+
+   
 
         return new UserLoginResponse(
             "Login successful",

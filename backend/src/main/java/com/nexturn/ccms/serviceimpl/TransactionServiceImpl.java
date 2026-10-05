@@ -2,11 +2,11 @@ package com.nexturn.ccms.serviceimpl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nexturn.ccms.dto.TransactionRequest;
@@ -32,14 +32,19 @@ import jakarta.transaction.Transactional;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 	
-	@Autowired
-	TransactionRepository transactionRepository;
-	
-	@Autowired
-	CreditCardDetailsRepository creditCardDetailsRepository;
+	private final TransactionRepository transactionRepository;
+	private final CreditCardDetailsRepository creditCardDetailsRepository;
+	private final CustomerRepository customerRepository;
 
-	@Autowired
-	CustomerRepository customerRepository;
+	public TransactionServiceImpl(
+	        TransactionRepository transactionRepository,
+	        CreditCardDetailsRepository creditCardDetailsRepository,
+	        CustomerRepository customerRepository) {
+
+	    this.transactionRepository = transactionRepository;
+	    this.creditCardDetailsRepository = creditCardDetailsRepository;
+	    this.customerRepository = customerRepository;
+	}
 	
 	@Override
 	@Transactional
@@ -60,15 +65,14 @@ public class TransactionServiceImpl implements TransactionService {
 	    transaction.setCard(card);
 	    transaction.setTransactionType(request.getTransactionType());
 	    transaction.setAmount(request.getAmount());
-	    transaction.setTransactionDate(LocalDateTime.now());
+	    transaction.setTransactionDate(LocalDateTime.now(ZoneId.of("Asia/Kolkata"))
+	    );
 	    transaction.setDescription(request.getDescription());
 	    transaction.setMerchant(request.getMerchant());
 
 	    switch (request.getTransactionType()) {
 	
-	        case PURCHASE:
-	        case CASH_WITHDRAWAL:
-	        case FEE:
+	        case PURCHASE, CASH_WITHDRAWAL, FEE:
 	            if (request.getAmount() > card.getAvailableLimit()) 
 	            	throw new InsufficientCreditLimitException("Insufficient available credit limit!");
 	
@@ -178,62 +182,84 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<TransactionResponse> filterTransactions(String cardNumber, String type, LocalDate fromDate, LocalDate toDate, 
-			Double minAmount, Double maxAmount) {
+	public List<TransactionResponse> filterTransactions(
+	        String cardNumber,
+	        String type,
+	        LocalDate fromDate,
+	        LocalDate toDate,
+	        Double minAmount,
+	        Double maxAmount) {
 
 	    CreditCardDetails card = creditCardDetailsRepository.findById(cardNumber)
-	            .orElseThrow(() -> new CreditCardNotFoundException("Credit card not found for card number: " + cardNumber));
+	            .orElseThrow(() -> new CreditCardNotFoundException(
+	                    "Credit card not found for card number: " + cardNumber));
 
-	    List<Transaction> transactions = transactionRepository.findByCardCardNumber(card.getCardNumber());
+	    List<Transaction> transactions =
+	            transactionRepository.findByCardCardNumber(card.getCardNumber());
 
-	    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) 
-	        throw new InvalidDateRangeException("From date cannot be after to date");
+	    if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+	        throw new InvalidDateRangeException(
+	                "From date cannot be after to date");
+	    }
 
-	    if (minAmount != null && maxAmount != null && minAmount > maxAmount)
-	        throw new InvalidAmountException("Minimum amount cannot be greater than maximum amount");
-	   
+	    if (minAmount != null && maxAmount != null && minAmount > maxAmount) {
+	        throw new InvalidAmountException(
+	                "Minimum amount cannot be greater than maximum amount");
+	    }
 
 	    List<TransactionResponse> responseList = new ArrayList<>();
 
 	    for (Transaction transaction : transactions) {
-	        if (type != null && !type.isBlank()) {
-	            if (!transaction.getTransactionType().name().equalsIgnoreCase(type)) continue;
-	        }
-	        if (fromDate != null) {
-	            if (transaction.getTransactionDate().toLocalDate().isBefore(fromDate)) 
-	                continue;
-	        }
 
-	        if (toDate != null) {
-	            if (transaction.getTransactionDate().toLocalDate().isAfter(toDate))
-	                continue;
+	        boolean matchesType =
+	                type == null
+	                || type.isBlank()
+	                || transaction.getTransactionType()
+	                        .name()
+	                        .equalsIgnoreCase(type);
+
+	        boolean matchesFromDate =
+	                fromDate == null
+	                || !transaction.getTransactionDate()
+	                        .toLocalDate()
+	                        .isBefore(fromDate);
+
+	        boolean matchesToDate =
+	                toDate == null
+	                || !transaction.getTransactionDate()
+	                        .toLocalDate()
+	                        .isAfter(toDate);
+
+	        boolean matchesMinAmount =
+	                minAmount == null
+	                || transaction.getAmount() >= minAmount;
+
+	        boolean matchesMaxAmount =
+	                maxAmount == null
+	                || transaction.getAmount() <= maxAmount;
+
+	        if (matchesType
+	                && matchesFromDate
+	                && matchesToDate
+	                && matchesMinAmount
+	                && matchesMaxAmount) {
+
+	            TransactionResponse response = new TransactionResponse();
+
+	            response.setTransactionId(transaction.getTransactionId());
+	            response.setCardNumber(transaction.getCard().getCardNumber());
+	            response.setTransactionType(transaction.getTransactionType());
+	            response.setAmount(transaction.getAmount());
+	            response.setTransactionDate(transaction.getTransactionDate());
+	            response.setDescription(transaction.getDescription());
+	            response.setMerchant(transaction.getMerchant());
+
+	            responseList.add(response);
 	        }
-	        if (minAmount != null) {
-	            if (transaction.getAmount() < minAmount)
-	                continue;
-	        }
-
-	        if (maxAmount != null) {
-	            if (transaction.getAmount() > maxAmount)
-	                continue;
-	        }
-
-	        TransactionResponse response = new TransactionResponse();
-
-	        response.setTransactionId(transaction.getTransactionId());
-	        response.setCardNumber(transaction.getCard().getCardNumber());
-	        response.setTransactionType(transaction.getTransactionType());
-	        response.setAmount(transaction.getAmount());
-	        response.setTransactionDate(transaction.getTransactionDate());
-	        response.setDescription(transaction.getDescription());
-	        response.setMerchant(transaction.getMerchant());
-
-	        responseList.add(response);
 	    }
 
 	    return responseList;
 	}
-
 	@Override
 	public TransactionSummaryResponse getTransactionSummary(String cardNumber) {
 	    CreditCardDetails card = creditCardDetailsRepository.findById(cardNumber)
